@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDebounce } from "@/shared/lib";
 
 // 지역 데이터 더미
 const REGIONS: readonly string[] = [
@@ -47,21 +48,41 @@ const REGIONS: readonly string[] = [
   "서울 중랑구",
 ];
 
+// 검색 결과 최대 개수 제한 (성능 최적화)
+const MAX_SEARCH_RESULTS = 100;
+
 export const SearchBar = (): ReactElement => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  // 검색어에 따라 지역 필터링
+  // debounce를 적용한 검색어 (300ms 지연)
+  const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
+
+  // 검색어에 따라 지역 필터링 (debounce된 검색어 사용)
   const filteredRegions: string[] = useMemo<string[]>(() => {
-    if (searchQuery.trim() === "") {
+    const query = debouncedSearchQuery.trim();
+
+    if (query === "") {
       return [];
     }
-    return REGIONS.filter((region: string) =>
-      region.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
+
+    const lowerQuery = query.toLowerCase();
+    const results: string[] = [];
+
+    // 최대 결과 개수 제한으로 조기 종료
+    for (const region of REGIONS) {
+      if (region.toLowerCase().includes(lowerQuery)) {
+        results.push(region);
+        if (results.length >= MAX_SEARCH_RESULTS) {
+          break;
+        }
+      }
+    }
+
+    return results;
+  }, [debouncedSearchQuery]);
 
   // 외부 클릭 시 focus 해제
   useEffect(() => {
