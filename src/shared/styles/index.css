@@ -15,19 +15,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -48,9 +37,10 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+/* 전역 button hover 스타일 제거 - 각 컴포넌트에서 개별적으로 스타일링 */
+/* button:hover {
   border-color: #646cff;
-}
+} */
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;

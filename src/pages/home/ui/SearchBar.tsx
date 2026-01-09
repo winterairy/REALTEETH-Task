@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDebounce } from "@/shared/lib";
+import { useDebounce } from "@/shared/lib/useDebounce";
 
 // 지역 데이터 더미
 const REGIONS: readonly string[] = [
