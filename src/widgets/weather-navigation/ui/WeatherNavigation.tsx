@@ -1,8 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input, FavoritesButton } from "@/shared/ui";
 
 export const WeatherNavigation = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const handleFavoritesClick = () => {
+    navigate("/favorites");
+  };
 
   return (
     <nav className="flex items-center justify-between p-4 md:p-6">
@@ -15,7 +21,7 @@ export const WeatherNavigation = () => {
           className="flex-1"
         />
       </div>
-      <FavoritesButton aria-label="즐겨찾기" />
+      <FavoritesButton aria-label="즐겨찾기" onClick={handleFavoritesClick} />
     </nav>
   );
 };
