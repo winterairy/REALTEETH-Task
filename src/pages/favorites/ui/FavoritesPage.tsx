@@ -1,54 +1,99 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import { CardList } from '@/widgets/card-list';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { CardList } from "@/widgets/card-list";
+import { mockWeatherData } from "@/entities/weather";
 
 export const FavoritesPage = () => {
   const navigate = useNavigate();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [cardToRemove, setCardToRemove] = useState<string | number | null>(null);
+  const [cardToRemove, setCardToRemove] = useState<string | number | null>(
+    null
+  );
 
   const handleCloseClick = () => {
-    navigate('/');
+    navigate("/");
   };
 
   // 임시 데이터 - 나중에 API나 상태 관리로 대체 가능
   const [favoriteCards, setFavoriteCards] = useState([
     {
       id: 1,
-      title: '즐겨찾기 항목 1',
-      description: '이것은 첫 번째 즐겨찾기 항목의 설명입니다. 클릭하면 메인화면으로 이동합니다.',
-      href: '/',
+      title: "서울특별시",
+      description: "",
+      href: "/",
+      weather: {
+        ...mockWeatherData,
+        location: "서울특별시",
+        currentTemp: 15,
+        maxTemp: 18,
+        minTemp: 8,
+      },
     },
     {
       id: 2,
-      title: '즐겨찾기 항목 2',
-      description: '이것은 두 번째 즐겨찾기 항목의 설명입니다. 더 자세한 내용을 여기에 표시할 수 있습니다.',
-      href: '/',
+      title: "부산광역시",
+      description: "",
+      href: "/",
+      weather: {
+        ...mockWeatherData,
+        location: "부산광역시",
+        currentTemp: 17,
+        maxTemp: 20,
+        minTemp: 12,
+      },
     },
     {
       id: 3,
-      title: '즐겨찾기 항목 3',
-      description: '세 번째 즐겨찾기 항목입니다. 다양한 정보를 카드 형태로 표시할 수 있습니다.',
-      href: '/',
+      title: "대구광역시",
+      description: "",
+      href: "/",
+      weather: {
+        ...mockWeatherData,
+        location: "대구광역시",
+        currentTemp: 16,
+        maxTemp: 19,
+        minTemp: 10,
+      },
     },
     {
       id: 4,
-      title: '즐겨찾기 항목 4',
-      description: '네 번째 즐겨찾기 항목입니다. 카드 리스트는 반응형 그리드로 표시됩니다.',
-      href: '/',
+      title: "인천광역시",
+      description: "",
+      href: "/",
+      weather: {
+        ...mockWeatherData,
+        location: "인천광역시",
+        currentTemp: 14,
+        maxTemp: 17,
+        minTemp: 9,
+      },
     },
     {
       id: 5,
-      title: '즐겨찾기 항목 5',
-      description: '다섯 번째 즐겨찾기 항목입니다. 모바일에서는 1열, 태블릿에서는 2열, 데스크톱에서는 3열로 표시됩니다.',
-      href: '/',
+      title: "광주광역시",
+      description: "",
+      href: "/",
+      weather: {
+        ...mockWeatherData,
+        location: "광주광역시",
+        currentTemp: 18,
+        maxTemp: 21,
+        minTemp: 13,
+      },
     },
     {
       id: 6,
-      title: '즐겨찾기 항목 6',
-      description: '여섯 번째 즐겨찾기 항목입니다. 6개 이상의 카드도 목록으로 잘 표시됩니다.',
-      href: '/',
+      title: "대전광역시",
+      description: "",
+      href: "/",
+      weather: {
+        ...mockWeatherData,
+        location: "대전광역시",
+        currentTemp: 16,
+        maxTemp: 19,
+        minTemp: 11,
+      },
     },
   ]);
 
@@ -59,7 +104,9 @@ export const FavoritesPage = () => {
 
   const confirmUnfavorite = () => {
     if (cardToRemove !== null) {
-      setFavoriteCards(favoriteCards.filter(card => card.id !== cardToRemove));
+      setFavoriteCards(
+        favoriteCards.filter((card) => card.id !== cardToRemove)
+      );
       setShowConfirmModal(false);
       setCardToRemove(null);
     }
@@ -70,7 +117,15 @@ export const FavoritesPage = () => {
     setCardToRemove(null);
   };
 
-  const selectedCard = favoriteCards.find(card => card.id === cardToRemove);
+  const handleTitleUpdate = (cardId: string | number, newTitle: string) => {
+    setFavoriteCards(
+      favoriteCards.map((card) =>
+        card.id === cardId ? { ...card, title: newTitle } : card
+      )
+    );
+  };
+
+  const selectedCard = favoriteCards.find((card) => card.id === cardToRemove);
 
   return (
     <>
@@ -93,12 +148,14 @@ export const FavoritesPage = () => {
               <XMarkIcon className="h-6 w-6 text-gray-900 dark:text-white" />
             </button>
           </div>
-          
+
           {favoriteCards.length > 0 ? (
-            <CardList 
-              cards={favoriteCards} 
+            <CardList
+              cards={favoriteCards}
               onFavoriteClick={unfavorite}
               showFavoriteButton={true}
+              onTitleUpdate={handleTitleUpdate}
+              showEditButton={true}
             />
           ) : (
             <div className="text-center py-12">
@@ -113,7 +170,7 @@ export const FavoritesPage = () => {
       {/* 즐겨찾기 해제 팝업 모달*/}
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-50"
             onClick={cancelUnfavorite}
           />
