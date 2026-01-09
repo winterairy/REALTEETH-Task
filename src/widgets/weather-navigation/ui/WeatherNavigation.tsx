@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input, Button, Icon } from "@/shared/ui";
+import { Input, FavoritesButton } from "@/shared/ui";
 
 export const WeatherNavigation = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -15,9 +15,7 @@ export const WeatherNavigation = () => {
           className="flex-1"
         />
       </div>
-      <Button variant="icon" aria-label="즐겨찾기">
-        <Icon name="star" />
-      </Button>
+      <FavoritesButton aria-label="즐겨찾기" />
     </nav>
   );
 };
