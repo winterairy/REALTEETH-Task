@@ -1,3 +1,2 @@
-export { getWeatherByCoordinates } from './api/weatherApi';
-export type { WeatherData } from './model/types';
-
+export { mockWeatherData } from "./model/mock-data";
+export type { WeatherData, HourlyTemperature } from "./model/types";
