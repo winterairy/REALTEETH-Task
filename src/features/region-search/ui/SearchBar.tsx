@@ -116,13 +116,17 @@ export const SearchBar = (): ReactElement => {
     navigate("/");
   };
 
+  const inputClassName = isFocused
+    ? "w-full px-4 py-3 text-md text-gray-900 border-2 border-blue-500 rounded-full focus:outline-none focus:border-blue-500 transition-all"
+    : "w-full px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50";
+
   const showResults: boolean = isFocused;
 
   return (
     <>
       {isFocused && (
         <div
-          className="fixed inset-0 bg-white bg-opacity-50 z-40"
+          className="fixed inset-0 z-40 bg-white bg-opacity-50"
           onClick={(): void => setIsFocused(false)}
         />
       )}
@@ -149,11 +153,11 @@ export const SearchBar = (): ReactElement => {
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             placeholder="지역을 검색하세요"
-            className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-all"
+            className={inputClassName}
           />
 
           {showResults && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white text-gray-900 border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
               {searchQuery.trim() === "" ? (
                 <div className="px-4 py-8 text-center text-gray-500">
                   검색어를 입력하세요
