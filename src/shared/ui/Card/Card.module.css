@@ -1,0 +1,43 @@
+.card {
+  display: block;
+  position: relative;
+  width: 100%;
+  text-align: left;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  background-color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+}
+
+.card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 0;
+  transform: translateY(-0.25rem);
+  color: inherit;
+}
+
+.card:active {
+  transform: translateY(0);
+}
+
+.card:focus,
+.card:focus-visible {
+  outline: none;
+}
+
+.card:visited {
+  color: inherit;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .card {
+    border-color: rgba(55, 65, 81, 0.7);
+    background-color: rgb(31, 41, 55);
+  }
+}

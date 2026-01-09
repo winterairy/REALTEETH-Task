@@ -1,0 +1,30 @@
+import type { ReactNode } from 'react';
+import styles from './Card.module.css';
+
+interface CardProps {
+  title: string;
+  description: string;
+  href?: string;
+  className?: string;
+  children?: ReactNode;
+}
+
+export const Card = ({ title, description, href, className = '', children }: CardProps) => {
+  return (
+    <a
+      href={href || '#'}
+      className={`${styles.card} ${className}`}
+    >
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white leading-tight">
+          {title}
+        </h3>
+        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+          {description}
+        </p>
+      </div>
+
+      {children ? <div className="mt-4">{children}</div> : null}
+    </a>
+  );
+};
