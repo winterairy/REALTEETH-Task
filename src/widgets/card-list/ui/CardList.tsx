@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Card } from "@/shared/ui";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { PencilIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import type { WeatherData } from "@/entities/weather";
 import styles from "./CardList.module.css";
 
 interface CardItem {
@@ -10,7 +9,6 @@ interface CardItem {
   title: string;
   description: string;
   href?: string;
-  weather?: WeatherData;
 }
 
 interface CardListProps {
