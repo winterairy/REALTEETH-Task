@@ -1,6 +1,6 @@
-import { Card } from '@/shared/ui';
-import { StarIcon } from '@heroicons/react/24/solid';
-import styles from './CardList.module.css';
+import { Card } from "@/shared/ui";
+import { StarIcon } from "@heroicons/react/24/solid";
+import styles from "./CardList.module.css";
 
 interface CardItem {
   id: string | number;
@@ -16,13 +16,16 @@ interface CardListProps {
   showFavoriteButton?: boolean;
 }
 
-export const CardList = ({ 
-  cards, 
-  className = '', 
+export const CardList = ({
+  cards,
+  className = "",
   onFavoriteClick,
-  showFavoriteButton = false 
+  showFavoriteButton = false,
 }: CardListProps) => {
-  const handleFavoriteClick = (e: React.MouseEvent, cardId: string | number) => {
+  const handleFavoriteClick = (
+    e: React.MouseEvent,
+    cardId: string | number
+  ) => {
     e.preventDefault();
     e.stopPropagation();
     onFavoriteClick?.(cardId);
@@ -41,10 +44,10 @@ export const CardList = ({
             {showFavoriteButton && (
               <button
                 onClick={(e) => handleFavoriteClick(e, card.id)}
-                className="absolute top-4 right-4 p-2 rounded-full bg-yellow-100 dark:bg-yellow-900/30 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-colors cursor-pointer z-10"
+                className="absolute top-4 right-4 p-2 transition-colors cursor-pointer z-10"
                 aria-label="즐겨찾기 해제"
               >
-                <StarIcon className="h-5 w-5 text-yellow-500 dark:text-yellow-400" />
+                <StarIcon className="h-5 w-5 text-yellow-500 hover:text-yellow-600" />
               </button>
             )}
           </Card>
