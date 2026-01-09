@@ -1,11 +1,19 @@
-import { type ReactElement } from "react";
-import { SearchBar } from "./SearchBar";
+import { mockWeatherData } from "@/entities/weather";
+import {
+  WeatherNavigation,
+  WeatherHeader,
+  TemperatureRange,
+  HourlyForecast,
+} from "@/widgets";
 
-export const HomePage = (): ReactElement => {
+export const HomePage = () => {
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <SearchBar />
+    <div className="min-h-screen bg-linear-to-br from-blue-400 via-blue-500 to-blue-600 text-white">
+      <WeatherNavigation />
+      <div className="container mx-auto px-4 pb-8">
+        <WeatherHeader weather={mockWeatherData} />
+        <TemperatureRange weather={mockWeatherData} />
+        <HourlyForecast weather={mockWeatherData} />
       </div>
     </div>
   );
