@@ -60,6 +60,27 @@ export const SearchBar = (): ReactElement => {
     };
   }, []);
 
+  // ESC 키로 검색 목록 닫기
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === "Escape" && isFocused) {
+        setIsFocused(false);
+        // 입력 필드에서 포커스 제거
+        if (searchContainerRef.current) {
+          const input = searchContainerRef.current.querySelector("input");
+          if (input) {
+            input.blur();
+          }
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return (): void => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isFocused]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchQuery(e.target.value);
   };
