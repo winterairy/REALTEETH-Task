@@ -83,11 +83,23 @@ export const getVilageFcst = async (
             if (data.response?.header?.resultCode !== "00") {
               const errorMsg =
                 data.response?.header?.resultMsg || "알 수 없는 오류";
-              reject(
-                new Error(
-                  `기상청 API 오류: ${errorMsg} (코드: ${data.response?.header?.resultCode})`
-                )
-              );
+              
+              // 데이터가 없는 경우의 특정 에러 코드들
+              if (
+                data.response?.header?.resultCode === "03" ||
+                data.response?.header?.resultCode === "05" ||
+                errorMsg.includes("조회") ||
+                errorMsg.includes("데이터") ||
+                errorMsg.includes("정보")
+              ) {
+                reject(new Error("해당 장소의 정보가 제공되지 않습니다."));
+              } else {
+                reject(
+                  new Error(
+                    `기상청 API 오류: ${errorMsg} (코드: ${data.response?.header?.resultCode})`
+                  )
+                );
+              }
               return;
             }
 
@@ -157,6 +169,15 @@ export const parseWeatherData = (
   apiResponse: KmaApiResponse,
   location: string = "현재 위치"
 ): WeatherData => {
+  // 날씨 데이터가 없는 경우 체크
+  if (
+    !apiResponse.response?.body?.items?.item ||
+    apiResponse.response.body.items.item.length === 0 ||
+    apiResponse.response.body.totalCount === 0
+  ) {
+    throw new Error("해당 장소의 정보가 제공되지 않습니다.");
+  }
+
   const items = apiResponse.response.body.items.item;
   const currentDateStr = getCurrentDateStr();
   const currentTimeSlot = getCurrentTimeSlot();

@@ -26,21 +26,21 @@ const fetchWeatherDataByCoordinates = async (
   coordinates: Coordinates | null,
   locationName?: string
 ): Promise<WeatherData> => {
+  let lat: number;
+  let lon: number;
+  let location: string = locationName || "현재 위치";
+
+  if (coordinates) {
+    lat = coordinates.latitude;
+    lon = coordinates.longitude;
+  } else {
+    // 좌표가 없으면 현재 위치 가져오기
+    const currentPos = await getCurrentPosition();
+    lat = currentPos.latitude;
+    lon = currentPos.longitude;
+  }
+
   try {
-    let lat: number;
-    let lon: number;
-    let location: string = locationName || "현재 위치";
-
-    if (coordinates) {
-      lat = coordinates.latitude;
-      lon = coordinates.longitude;
-    } else {
-      // 좌표가 없으면 현재 위치 가져오기
-      const currentPos = await getCurrentPosition();
-      lat = currentPos.latitude;
-      lon = currentPos.longitude;
-    }
-
     // 날씨 데이터 가져오기
     const apiResponse = await getVilageFcst(lat, lon);
 
@@ -48,7 +48,13 @@ const fetchWeatherDataByCoordinates = async (
     return parseWeatherData(apiResponse, location);
   } catch (error) {
     console.error("Failed to fetch weather data:", error);
-    // 에러 발생 시 mock 데이터 반환
+    
+    // 날씨 데이터가 없는 경우 에러를 다시 던져서 UI에서 처리하도록 함
+    if (error instanceof Error && error.message === "해당 장소의 정보가 제공되지 않습니다.") {
+      throw error;
+    }
+    
+    // 다른 에러의 경우 mock 데이터 반환
     return mockWeatherData;
   }
 };

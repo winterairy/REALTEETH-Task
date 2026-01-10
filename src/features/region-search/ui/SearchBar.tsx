@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "@/shared/lib/useDebounce";
 import { addressToCoord } from "@/shared/api/kakaoLocalApi";
+import { Alert } from "@/shared/ui";
 import koreaDistricts from "@/assets/korea_districts.json";
 
 // 검색 결과 최대 개수 제한 (성능 최적화)
@@ -10,6 +11,8 @@ const MAX_SEARCH_RESULTS = 100;
 export const SearchBar = (): ReactElement => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -81,12 +84,20 @@ export const SearchBar = (): ReactElement => {
         // URL 쿼리 파라미터로 좌표 전달
         navigate(`/?lat=${latitude}&lon=${longitude}&location=${encodeURIComponent(region)}`);
       } else {
-        console.error("검색 결과가 없습니다.");
+        setAlertMessage("해당 장소의 정보가 제공되지 않습니다.");
+        setIsAlertOpen(true);
       }
     } catch (error) {
       console.error("Failed to get coordinates:", error);
-      // 에러 발생 시에도 홈으로 이동
-      navigate("/");
+      const errorMessage =
+        error instanceof Error
+          ? error.message === "검색 결과가 없습니다." ||
+            error.message.includes("정보가 제공되지 않습니다")
+            ? "해당 장소의 정보가 제공되지 않습니다."
+            : error.message
+          : "좌표를 가져오는데 실패했습니다.";
+      setAlertMessage(errorMessage);
+      setIsAlertOpen(true);
     }
   };
 
@@ -98,6 +109,12 @@ export const SearchBar = (): ReactElement => {
 
   return (
     <>
+      <Alert
+        message={alertMessage || "오류가 발생했습니다."}
+        isOpen={isAlertOpen}
+        onClose={() => setIsAlertOpen(false)}
+        type="error"
+      />
       {isFocused && (
         <div
           className="fixed inset-0 z-40 bg-white bg-opacity-50"
@@ -150,7 +167,7 @@ export const SearchBar = (): ReactElement => {
                 </ul>
               ) : (
                 <div className="px-4 py-8 text-center text-gray-500">
-                  검색 결과가 없습니다
+                  해당 장소의 정보가 제공되지 않습니다.
                 </div>
               )}
             </div>
