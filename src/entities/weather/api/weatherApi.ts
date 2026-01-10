@@ -83,7 +83,7 @@ export const getVilageFcst = async (
             if (data.response?.header?.resultCode !== "00") {
               const errorMsg =
                 data.response?.header?.resultMsg || "알 수 없는 오류";
-              
+
               // 데이터가 없는 경우의 특정 에러 코드들
               if (
                 data.response?.header?.resultCode === "03" ||
@@ -154,15 +154,17 @@ const getCurrentTimeSlot = (): string => {
 };
 
 /**
- * 날짜와 카테고리로 필터링하고 시간순으로 정렬된 TMP 항목들을 반환
+ * 카테고리로 필터링하고 날짜+시간순으로 정렬된 TMP 항목들을 반환 (다음 날짜 포함)
  */
-const getSortedTempItems = (
-  items: KmaApiItem[],
-  dateStr: string
-): KmaApiItem[] => {
+const getSortedTempItems = (items: KmaApiItem[]): KmaApiItem[] => {
   return items
-    .filter((item) => item.fcstDate === dateStr && item.category === "TMP")
-    .sort((a, b) => parseInt(a.fcstTime) - parseInt(b.fcstTime));
+    .filter((item) => item.category === "TMP")
+    .sort((a, b) => {
+      // 날짜와 시간을 함께 비교하여 정렬
+      const dateTimeA = a.fcstDate + a.fcstTime;
+      const dateTimeB = b.fcstDate + b.fcstTime;
+      return dateTimeA.localeCompare(dateTimeB);
+    });
 };
 
 export const parseWeatherData = (
@@ -183,13 +185,16 @@ export const parseWeatherData = (
   const currentTimeSlot = getCurrentTimeSlot();
   const currentHour = new Date().getHours();
 
-  // 정렬된 TMP 항목들 가져오기
-  const sortedTempItems = getSortedTempItems(items, currentDateStr);
+  // 정렬된 TMP 항목들 가져오기 (모든 날짜 포함)
+  const sortedTempItems = getSortedTempItems(items);
+
+  // 현재 날짜+시간 문자열 생성 (비교용)
+  const currentDateTime = currentDateStr + currentTimeSlot;
 
   // 1. 현재 기온: 현재 시간보다 크거나 같은 가장 가까운 시간대의 TMP 항목
   const currentTempItem =
     sortedTempItems.find(
-      (item) => parseInt(item.fcstTime) >= parseInt(currentTimeSlot)
+      (item) => item.fcstDate + item.fcstTime >= currentDateTime
     ) || sortedTempItems[0];
   const currentTemp = currentTempItem
     ? parseFloat(currentTempItem.fcstValue)
@@ -207,9 +212,9 @@ export const parseWeatherData = (
   );
   const minTemp = minTempItem ? parseFloat(minTempItem.fcstValue) : currentTemp;
 
-  // 4. 시간대별 기온: 현재 시간부터 시작해서 8개 가져오기
+  // 4. 시간대별 기온: 현재 시간부터 시작해서 8개 가져오기 (다음 날짜 포함)
   const currentIndex = sortedTempItems.findIndex(
-    (item) => parseInt(item.fcstTime) >= parseInt(currentTimeSlot)
+    (item) => item.fcstDate + item.fcstTime >= currentDateTime
   );
   const startIndex = currentIndex >= 0 ? currentIndex : 0;
 
@@ -220,7 +225,6 @@ export const parseWeatherData = (
       temp: parseFloat(item.fcstValue),
     }));
 
-  // 8개가 안 되면 나머지를 마지막 온도로 채우기
   const hourlyTemps = Array.from({ length: 8 }, (_, i) => {
     if (tempItems[i]) {
       return tempItems[i];
@@ -228,12 +232,16 @@ export const parseWeatherData = (
     const lastTemp = tempItems[tempItems.length - 1]?.temp ?? currentTemp;
     const lastTime = tempItems[tempItems.length - 1]?.time;
     if (lastTime) {
-      const [lastHour] = lastTime.split(":").map(Number);
-      const nextHour = (lastHour + (i - tempItems.length + 1)) % 24;
-      return {
-        time: `${String(nextHour).padStart(2, "0")}:00`,
-        temp: lastTemp,
-      };
+      // 시간 부분만 추출 (날짜 라벨 제거)
+      const timeMatch = lastTime.match(/^(\d{2}):(\d{2})/);
+      if (timeMatch) {
+        const lastHour = parseInt(timeMatch[1]);
+        const nextHour = (lastHour + (i - tempItems.length + 1)) % 24;
+        return {
+          time: `${String(nextHour).padStart(2, "0")}:00`,
+          temp: lastTemp,
+        };
+      }
     }
     return {
       time: `${String((currentHour + i) % 24).padStart(2, "0")}:00`,
