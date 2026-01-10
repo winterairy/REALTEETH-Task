@@ -5,7 +5,7 @@ interface AlertProps {
   message: string;
   isOpen: boolean;
   onClose: () => void;
-  type?: "error" | "warning" | "info";
+  type?: "error" | "warning" | "info" | "success";
   duration?: number; // 자동 닫기 시간 (ms), 0이면 자동 닫기 안 함
 }
 
@@ -33,13 +33,20 @@ export const Alert = ({
       ? "bg-red-500"
       : type === "warning"
         ? "bg-yellow-500"
-        : "bg-blue-500";
+        : type === "success"
+          ? "bg-green-500"
+          : "bg-blue-500";
+
+  const overlayStyle = type === "success" 
+    ? { backgroundColor: "rgba(255, 255, 255, 0.5)" }
+    : { backgroundColor: "rgba(0, 0, 0, 0.5)" };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* 배경 오버레이 */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50"
+        className="fixed inset-0"
+        style={overlayStyle}
         onClick={onClose}
       />
       

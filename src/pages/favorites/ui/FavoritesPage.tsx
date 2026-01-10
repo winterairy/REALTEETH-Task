@@ -1,94 +1,61 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { CardList } from "@/widgets/card-list";
+import { favoritesQueue, type FavoriteItem } from "@/shared/lib/favorites";
+import { FavoriteCard } from "./FavoriteCard";
+import styles from "@/widgets/card-list/ui/CardList.module.css";
 
 export const FavoritesPage = () => {
   const navigate = useNavigate();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [cardToRemove, setCardToRemove] = useState<string | number | null>(
-    null
-  );
+  const [cardToRemove, setCardToRemove] = useState<string | null>(null);
+  const [favoriteItems, setFavoriteItems] = useState<FavoriteItem[]>([]);
+  const [removingItemTitle, setRemovingItemTitle] = useState<string>("");
+
+  // 즐겨찾기 목록 불러오기
+  useEffect(() => {
+    const loadFavorites = () => {
+      const items = favoritesQueue.getAll();
+      setFavoriteItems(items);
+    };
+    loadFavorites();
+  }, []);
 
   const handleCloseClick = () => {
     navigate("/");
   };
 
-  // 임시 데이터 - 나중에 API나 상태 관리로 대체 가능
-  const [favoriteCards, setFavoriteCards] = useState([
-    {
-      id: 1,
-      title: "즐겨찾기 항목 1",
-      description:
-        "이것은 첫 번째 즐겨찾기 항목의 설명입니다. 클릭하면 메인화면으로 이동합니다.",
-      href: "/",
-    },
-    {
-      id: 2,
-      title: "즐겨찾기 항목 2",
-      description:
-        "이것은 두 번째 즐겨찾기 항목의 설명입니다. 더 자세한 내용을 여기에 표시할 수 있습니다.",
-      href: "/",
-    },
-    {
-      id: 3,
-      title: "즐겨찾기 항목 3",
-      description:
-        "세 번째 즐겨찾기 항목입니다. 다양한 정보를 카드 형태로 표시할 수 있습니다.",
-      href: "/",
-    },
-    {
-      id: 4,
-      title: "즐겨찾기 항목 4",
-      description:
-        "네 번째 즐겨찾기 항목입니다. 카드 리스트는 반응형 그리드로 표시됩니다.",
-      href: "/",
-    },
-    {
-      id: 5,
-      title: "즐겨찾기 항목 5",
-      description:
-        "다섯 번째 즐겨찾기 항목입니다. 모바일에서는 1열, 태블릿에서는 2열, 데스크톱에서는 3열로 표시됩니다.",
-      href: "/",
-    },
-    {
-      id: 6,
-      title: "즐겨찾기 항목 6",
-      description:
-        "여섯 번째 즐겨찾기 항목입니다. 6개 이상의 카드도 목록으로 잘 표시됩니다.",
-      href: "/",
-    },
-  ]);
-
-  const unfavorite = (cardId: string | number) => {
-    setCardToRemove(cardId);
-    setShowConfirmModal(true);
+  const handleRemove = (id: string) => {
+    const item = favoriteItems.find((item) => item.id === id);
+    if (item) {
+      setRemovingItemTitle(item.displayTitle);
+      setCardToRemove(id);
+      setShowConfirmModal(true);
+    }
   };
 
   const confirmUnfavorite = () => {
     if (cardToRemove !== null) {
-      setFavoriteCards(
-        favoriteCards.filter((card) => card.id !== cardToRemove)
-      );
+      favoritesQueue.remove(cardToRemove);
+      const updatedItems = favoritesQueue.getAll();
+      setFavoriteItems(updatedItems);
       setShowConfirmModal(false);
       setCardToRemove(null);
+      setRemovingItemTitle("");
     }
   };
 
   const cancelUnfavorite = () => {
     setShowConfirmModal(false);
     setCardToRemove(null);
+    setRemovingItemTitle("");
   };
 
-  const handleTitleUpdate = (cardId: string | number, newTitle: string) => {
-    setFavoriteCards(
-      favoriteCards.map((card) =>
-        card.id === cardId ? { ...card, title: newTitle } : card
-      )
-    );
+  const handleTitleUpdate = (id: string, newTitle: string) => {
+    favoritesQueue.updateTitle(id, newTitle);
+    const updatedItems = favoritesQueue.getAll();
+    setFavoriteItems(updatedItems);
   };
-
-  const selectedCard = favoriteCards.find((card) => card.id === cardToRemove);
 
   return (
     <>
@@ -112,14 +79,17 @@ export const FavoritesPage = () => {
             </button>
           </div>
 
-          {favoriteCards.length > 0 ? (
-            <CardList
-              cards={favoriteCards}
-              onFavoriteClick={unfavorite}
-              showFavoriteButton={true}
-              onTitleUpdate={handleTitleUpdate}
-              showEditButton={true}
-            />
+          {favoriteItems.length > 0 ? (
+            <div className={styles.cardList}>
+              {favoriteItems.map((item) => (
+                <FavoriteCard
+                  key={item.id}
+                  favoriteItem={item}
+                  onRemove={handleRemove}
+                  onTitleUpdate={handleTitleUpdate}
+                />
+              ))}
+            </div>
           ) : (
             <div className="text-center py-12">
               <p className="text-gray-500 dark:text-gray-400">
@@ -142,7 +112,7 @@ export const FavoritesPage = () => {
               즐겨찾기 해제
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              "{selectedCard?.title}" 항목을 즐겨찾기에서 해제하시겠습니까?
+              "{removingItemTitle}" 항목을 즐겨찾기에서 해제하시겠습니까?
             </p>
             <div className="flex gap-3 justify-end">
               <button

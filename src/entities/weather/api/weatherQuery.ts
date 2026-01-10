@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { getCurrentPosition } from "@/shared/lib/geolocation";
 import { getVilageFcst, parseWeatherData } from "./weatherApi";
 import { mockWeatherData } from "../model/mock-data";
@@ -8,6 +8,11 @@ export interface Coordinates {
   latitude: number;
   longitude: number;
 }
+
+type WeatherQueryOptions = Omit<
+  UseQueryOptions<WeatherData, Error>,
+  "queryKey" | "queryFn"
+>;
 
 /**
  * 날씨 데이터를 가져오는 Query Key
@@ -66,7 +71,8 @@ const fetchWeatherDataByCoordinates = async (
  */
 export const useWeatherQuery = (
   coordinates?: Coordinates | null,
-  locationName?: string
+  locationName?: string,
+  options?: WeatherQueryOptions
 ) => {
   return useQuery({
     queryKey: coordinates
@@ -79,5 +85,6 @@ export const useWeatherQuery = (
     enabled: !!coordinates, // coordinates가 설정될 때까지 비활성화
     staleTime: 1000 * 60 * 5, // 5분간 fresh 상태 유지
     gcTime: 1000 * 60 * 10, // 10분간 캐시 유지
+    ...options,
   });
 };

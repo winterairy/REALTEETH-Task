@@ -101,14 +101,14 @@ export const CardList = ({
             <div className="flex gap-1">
               <button
                 onClick={(e) => handleSaveClick(e, card.id)}
-                className="p-1.5 rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
+                className="p-1.5 rounded-full transition-colors"
                 aria-label="저장"
               >
                 <CheckIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
               </button>
               <button
                 onClick={(e) => handleCancelEdit(e)}
-                className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                className="p-1.5 rounded-full transition-colors"
                 aria-label="취소"
               >
                 <XMarkIcon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
@@ -131,7 +131,7 @@ export const CardList = ({
                 {showEditButton && !isEditing && (
                   <button
                     onClick={(e) => handleEditClick(e, card.id, card.title)}
-                    className="p-2 rounded-full  hover:bg-gray-200 transition-colors cursor-pointer"
+                    className="p-2 rounded-full transition-colors cursor-pointer"
                     aria-label="제목 수정"
                   >
                     <PencilIcon className="h-5 w-5 text-gray-600 " />
@@ -140,7 +140,7 @@ export const CardList = ({
                 {showFavoriteButton && !isEditing && (
                   <button
                     onClick={(e) => handleFavoriteClick(e, card.id)}
-                    className="p-2 rounded-full  hover:bg-yellow-100 transition-colors cursor-pointer"
+                    className="p-2 rounded-full transition-colors cursor-pointer"
                     aria-label="즐겨찾기 해제"
                   >
                     <StarIcon className="h-5 w-5 text-yellow-500 " />
