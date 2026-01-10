@@ -1,52 +1,8 @@
 import { useState, useRef, useEffect, useMemo, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "@/shared/lib/useDebounce";
-
-// 지역 데이터 더미
-const REGIONS: readonly string[] = [
-  "서울특별시",
-  "부산광역시",
-  "대구광역시",
-  "인천광역시",
-  "광주광역시",
-  "대전광역시",
-  "울산광역시",
-  "세종특별자치시",
-  "경기도",
-  "강원도",
-  "충청북도",
-  "충청남도",
-  "전라북도",
-  "전라남도",
-  "경상북도",
-  "경상남도",
-  "제주특별자치도",
-  "서울 강남구",
-  "서울 강동구",
-  "서울 강북구",
-  "서울 강서구",
-  "서울 관악구",
-  "서울 광진구",
-  "서울 구로구",
-  "서울 금천구",
-  "서울 노원구",
-  "서울 도봉구",
-  "서울 동대문구",
-  "서울 동작구",
-  "서울 마포구",
-  "서울 서대문구",
-  "서울 서초구",
-  "서울 성동구",
-  "서울 성북구",
-  "서울 송파구",
-  "서울 양천구",
-  "서울 영등포구",
-  "서울 용산구",
-  "서울 은평구",
-  "서울 종로구",
-  "서울 중구",
-  "서울 중랑구",
-];
+import { addressToCoord } from "@/shared/api/kakaoLocalApi";
+import koreaDistricts from "@/assets/korea_districts.json";
 
 // 검색 결과 최대 개수 제한 (성능 최적화)
 const MAX_SEARCH_RESULTS = 100;
@@ -72,7 +28,7 @@ export const SearchBar = (): ReactElement => {
     const results: string[] = [];
 
     // 최대 결과 개수 제한으로 조기 종료
-    for (const region of REGIONS) {
+    for (const region of koreaDistricts) {
       if (region.toLowerCase().includes(lowerQuery)) {
         results.push(region);
         if (results.length >= MAX_SEARCH_RESULTS) {
@@ -109,11 +65,29 @@ export const SearchBar = (): ReactElement => {
     setIsFocused(true);
   };
 
-  const handleRegionClick = (): void => {
-    setSearchQuery("");
-    setIsFocused(false);
-    // 메인화면으로 이동 (현재는 홈으로 이동)
-    navigate("/");
+  const handleRegionClick = async (region: string): Promise<void> => {
+    try {
+      setSearchQuery("");
+      setIsFocused(false);
+
+      // 카카오 Local API로 주소를 좌표로 변환
+      const response = await addressToCoord(region);
+      
+      if (response.documents.length > 0) {
+        const firstResult = response.documents[0];
+        const longitude = parseFloat(firstResult.x);
+        const latitude = parseFloat(firstResult.y);
+
+        // URL 쿼리 파라미터로 좌표 전달
+        navigate(`/?lat=${latitude}&lon=${longitude}&location=${encodeURIComponent(region)}`);
+      } else {
+        console.error("검색 결과가 없습니다.");
+      }
+    } catch (error) {
+      console.error("Failed to get coordinates:", error);
+      // 에러 발생 시에도 홈으로 이동
+      navigate("/");
+    }
   };
 
   const inputClassName = isFocused
@@ -167,7 +141,7 @@ export const SearchBar = (): ReactElement => {
                   {filteredRegions.map((region: string, index: number) => (
                     <li
                       key={index}
-                      onClick={handleRegionClick}
+                      onClick={() => handleRegionClick(region)}
                       className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors"
                     >
                       {region}
