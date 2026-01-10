@@ -33,7 +33,7 @@ const fetchWeatherDataByCoordinates = async (
 ): Promise<WeatherData> => {
   let lat: number;
   let lon: number;
-  let location: string = locationName || "현재 위치";
+  const location: string = locationName || "현재 위치";
 
   if (coordinates) {
     lat = coordinates.latitude;
@@ -53,12 +53,15 @@ const fetchWeatherDataByCoordinates = async (
     return parseWeatherData(apiResponse, location);
   } catch (error) {
     console.error("Failed to fetch weather data:", error);
-    
+
     // 날씨 데이터가 없는 경우 에러를 다시 던져서 UI에서 처리하도록 함
-    if (error instanceof Error && error.message === "해당 장소의 정보가 제공되지 않습니다.") {
+    if (
+      error instanceof Error &&
+      error.message === "해당 장소의 정보가 제공되지 않습니다."
+    ) {
       throw error;
     }
-    
+
     // 다른 에러의 경우 mock 데이터 반환
     return mockWeatherData;
   }
@@ -81,7 +84,8 @@ export const useWeatherQuery = (
           coordinates.longitude
         )
       : weatherQueryKeys.current(),
-    queryFn: () => fetchWeatherDataByCoordinates(coordinates || null, locationName),
+    queryFn: () =>
+      fetchWeatherDataByCoordinates(coordinates || null, locationName),
     enabled: !!coordinates, // coordinates가 설정될 때까지 비활성화
     staleTime: 1000 * 60 * 5, // 5분간 fresh 상태 유지
     gcTime: 1000 * 60 * 10, // 10분간 캐시 유지
