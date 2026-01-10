@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentPosition } from "@/shared/lib/geolocation";
-import { getUltraSrtNcst, parseWeatherData } from "./weatherApi";
+import { getVilageFcst, parseWeatherData } from "./weatherApi";
 import { mockWeatherData } from "../model/mock-data";
 import type { WeatherData } from "../model/types";
 
@@ -21,7 +21,7 @@ const fetchWeatherData = async (): Promise<WeatherData> => {
     const { latitude, longitude } = await getCurrentPosition();
 
     // 날씨 데이터 가져오기
-    const apiResponse = await getUltraSrtNcst(latitude, longitude);
+    const apiResponse = await getVilageFcst(latitude, longitude);
 
     // API 응답을 WeatherData 형식으로 변환
     return parseWeatherData(apiResponse, "현재 위치");

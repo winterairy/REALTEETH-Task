@@ -18,7 +18,7 @@ export const getCurrentPosition = (): Promise<Coordinates> => {
     if (!navigator.geolocation) {
       reject({
         code: 0,
-        message: 'Geolocation is not supported by this browser.',
+        message: "위치를 확인할 수 없습니다.",
       });
       return;
     }
@@ -38,10 +38,9 @@ export const getCurrentPosition = (): Promise<Coordinates> => {
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 20000,
         maximumAge: 0,
       }
     );
   });
 };
-
