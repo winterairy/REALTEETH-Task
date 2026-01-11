@@ -13,10 +13,10 @@ class FavoritesQueue {
   private readonly MAX_SIZE = 6;
   private readonly STORAGE_KEY = "weather_favorites";
 
-  // localStorage에서 즐겨찾기 목록 불러오기
+  // sessionStorage에서 즐겨찾기 목록 불러오기
   private loadFromStorage(): FavoriteItem[] {
     try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
+      const stored = sessionStorage.getItem(this.STORAGE_KEY);
       if (stored) {
         return JSON.parse(stored) as FavoriteItem[];
       }
@@ -26,10 +26,10 @@ class FavoritesQueue {
     return [];
   }
 
-  // localStorage에 즐겨찾기 목록 저장하기
+  // sessionStorage에 즐겨찾기 목록 저장하기
   private saveToStorage(items: FavoriteItem[]): void {
     try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(items));
+      sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(items));
     } catch (error) {
       console.error("Failed to save favorites to storage:", error);
     }
