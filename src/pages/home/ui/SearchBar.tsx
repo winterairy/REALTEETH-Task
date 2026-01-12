@@ -1,83 +1,11 @@
-import { useState, useRef, useEffect, useMemo, type ReactElement } from "react";
+import { useState, useRef, useEffect, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDebounce } from "@/shared/lib/useDebounce";
-
-const REGIONS: readonly string[] = [
-  "서울특별시",
-  "부산광역시",
-  "대구광역시",
-  "인천광역시",
-  "광주광역시",
-  "대전광역시",
-  "울산광역시",
-  "세종특별자치시",
-  "경기도",
-  "강원도",
-  "충청북도",
-  "충청남도",
-  "전라북도",
-  "전라남도",
-  "경상북도",
-  "경상남도",
-  "제주특별자치도",
-  "서울 강남구",
-  "서울 강동구",
-  "서울 강북구",
-  "서울 강서구",
-  "서울 관악구",
-  "서울 광진구",
-  "서울 구로구",
-  "서울 금천구",
-  "서울 노원구",
-  "서울 도봉구",
-  "서울 동대문구",
-  "서울 동작구",
-  "서울 마포구",
-  "서울 서대문구",
-  "서울 서초구",
-  "서울 성동구",
-  "서울 성북구",
-  "서울 송파구",
-  "서울 양천구",
-  "서울 영등포구",
-  "서울 용산구",
-  "서울 은평구",
-  "서울 종로구",
-  "서울 중구",
-  "서울 중랑구",
-];
-
-const MAX_SEARCH_RESULTS = 100;
 
 export const SearchBar = (): ReactElement => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-
-  const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
-
-  const filteredRegions: string[] = useMemo<string[]>(() => {
-    const query = debouncedSearchQuery.trim();
-
-    if (query === "") {
-      return [];
-    }
-
-    const lowerQuery = query.toLowerCase();
-    const results: string[] = [];
-
-    for (const region of REGIONS) {
-      if (region.toLowerCase().includes(lowerQuery)) {
-        results.push(region);
-        if (results.length >= MAX_SEARCH_RESULTS) {
-          break;
-        }
-      }
-    }
-
-    return results;
-  }, [debouncedSearchQuery]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent): void => {
@@ -147,27 +75,9 @@ export const SearchBar = (): ReactElement => {
 
           {showResults && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
-              {searchQuery.trim() === "" ? (
-                <div className="px-4 py-8 text-center text-gray-500">
-                  검색어를 입력하세요
-                </div>
-              ) : filteredRegions.length > 0 ? (
-                <ul className="py-2">
-                  {filteredRegions.map((region: string, index: number) => (
-                    <li
-                      key={index}
-                      onClick={handleRegionClick}
-                      className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors"
-                    >
-                      {region}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="px-4 py-8 text-center text-gray-500">
-                  검색 결과가 없습니다
-                </div>
-              )}
+              <div className="px-4 py-8 text-center text-gray-500">
+                검색어를 입력하세요
+              </div>
             </div>
           )}
         </div>
