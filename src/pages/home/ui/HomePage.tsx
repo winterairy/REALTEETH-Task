@@ -195,17 +195,17 @@ export const HomePage = () => {
             className="fixed inset-0 bg-black bg-opacity-50"
             onClick={handleCancelAdd}
           />
-          <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          <div className="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
               즐겨찾기 추가
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-gray-600 mb-6">
               즐겨찾기가 이미 6개입니다. 가장 오래된 즐겨찾기 "{removedItem.displayTitle}"를 제거하고 새로 추가하시겠습니까?
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleCancelAdd}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
               >
                 취소
               </button>

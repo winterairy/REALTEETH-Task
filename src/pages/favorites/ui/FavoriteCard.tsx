@@ -135,7 +135,7 @@ export const FavoriteCard = ({
             setEditTitle(favoriteItem.displayTitle);
           }
         }}
-        className="flex-1 text-lg font-semibold text-gray-900 dark:text-white leading-tight px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="flex-1 text-lg font-semibold text-gray-900 leading-tight px-2 py-1 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         autoFocus
       />
       <div className="flex gap-1">
@@ -144,14 +144,14 @@ export const FavoriteCard = ({
           className="p-1.5 rounded-full transition-colors"
           aria-label="저장"
         >
-          <CheckIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+          <CheckIcon className="h-5 w-5 text-green-600" />
         </button>
         <button
           onClick={handleCancelEdit}
           className="p-1.5 rounded-full transition-colors"
           aria-label="취소"
         >
-          <XMarkIcon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+          <XMarkIcon className="h-5 w-5 text-gray-600" />
         </button>
       </div>
     </div>

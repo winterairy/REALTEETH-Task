@@ -33,11 +33,3 @@
 .card:visited {
   color: inherit;
 }
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .card {
-    border-color: rgba(55, 65, 81, 0.7);
-    background-color: rgb(31, 41, 55);
-  }
-}

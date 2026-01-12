@@ -58,23 +58,23 @@ export const FavoritesPage = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <div className="min-h-screen bg-gray-50 py-8">
         <div className="mx-[15px]">
           <div className="mb-8 flex items-start justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 즐겨찾기
               </h1>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-gray-600">
                 즐겨찾기한 항목들을 확인하세요
               </p>
             </div>
             <button
               onClick={handleCloseClick}
-              className="p-2 rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+              className="p-2 rounded-full transition-colors hover:bg-gray-200 cursor-pointer"
               aria-label="닫기"
             >
-              <XMarkIcon className="h-6 w-6 text-gray-900 dark:text-white" />
+              <XMarkIcon className="h-6 w-6 text-gray-900" />
             </button>
           </div>
 
@@ -91,7 +91,7 @@ export const FavoritesPage = () => {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-500 dark:text-gray-400">
+              <p className="text-gray-500">
                 즐겨찾기한 항목이 없습니다.
               </p>
             </div>
@@ -105,17 +105,17 @@ export const FavoritesPage = () => {
             className="fixed inset-0 bg-black bg-opacity-50"
             onClick={cancelUnfavorite}
           />
-          <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          <div className="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
               즐겨찾기 해제
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-gray-600 mb-6">
               "{removingItemTitle}" 항목을 즐겨찾기에서 해제하시겠습니까?
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={cancelUnfavorite}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
               >
                 취소
               </button>

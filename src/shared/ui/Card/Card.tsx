@@ -17,13 +17,13 @@ export const Card = ({ title, description, href, className = '', children }: Car
     >
       <div className="space-y-2">
         {typeof title === 'string' ? (
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white leading-tight">
+          <h3 className="text-lg font-semibold text-gray-900 leading-tight">
             {title}
           </h3>
         ) : (
           title
         )}
-        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+        <p className="text-gray-600 text-sm leading-relaxed">
           {description}
         </p>
       </div>
