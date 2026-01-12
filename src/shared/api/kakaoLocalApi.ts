@@ -1,25 +1,14 @@
-/**
- * 카카오 Local API 클라이언트
- * https://developers.kakao.com/docs/latest/ko/local/dev-guide
- */
-
 const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY as string | undefined;
 const KAKAO_BASE_URL = "https://dapi.kakao.com/v2/local";
 
 if (!KAKAO_API_KEY) {
-  console.warn("VITE_KAKAO_API_KEY is missing in .env");
+  console.warn(".env 파일에 VITE_KAKAO_API_KEY가 없습니다");
 }
 
-/**
- * 카카오 API 요청 헤더
- */
 const getHeaders = () => ({
   Authorization: `KakaoAK ${KAKAO_API_KEY}`,
 });
 
-/**
- * 주소로 좌표 변환 API 응답 타입
- */
 export interface AddressToCoordResponse {
   meta: {
     total_count: number;
@@ -51,9 +40,6 @@ export interface AddressToCoordResponse {
   }>;
 }
 
-/**
- * 좌표로 행정구역정보 변환 API 응답 타입
- */
 export interface CoordToRegionResponse {
   meta: {
     total_count: number;
@@ -71,9 +57,6 @@ export interface CoordToRegionResponse {
   }>;
 }
 
-/**
- * 좌표로 주소 변환 API 응답 타입
- */
 export interface CoordToAddressResponse {
   meta: {
     total_count: number;
@@ -103,16 +86,11 @@ export interface CoordToAddressResponse {
   }>;
 }
 
-/**
- * 주소로 좌표 변환
- * @param query - 검색할 주소
- * @returns Promise<AddressToCoordResponse>
- */
 export const addressToCoord = async (
   query: string
 ): Promise<AddressToCoordResponse> => {
   if (!KAKAO_API_KEY) {
-    throw new Error("VITE_KAKAO_API_KEY is missing");
+    throw new Error("카카오 API 키가 없습니다");
   }
 
   const params = new URLSearchParams({
@@ -142,18 +120,12 @@ export const addressToCoord = async (
   return data;
 };
 
-/**
- * 좌표로 행정구역정보 변환 (법정동 우선)
- * @param longitude - 경도
- * @param latitude - 위도
- * @returns Promise<CoordToRegionResponse>
- */
 export const coordToRegion = async (
   longitude: number,
   latitude: number
 ): Promise<CoordToRegionResponse> => {
   if (!KAKAO_API_KEY) {
-    throw new Error("VITE_KAKAO_API_KEY is missing");
+    throw new Error("카카오 API 키가 없습니다");
   }
 
   const params = new URLSearchParams({
@@ -181,18 +153,12 @@ export const coordToRegion = async (
   return data;
 };
 
-/**
- * 좌표로 주소 변환
- * @param longitude - 경도
- * @param latitude - 위도
- * @returns Promise<CoordToAddressResponse>
- */
 export const coordToAddress = async (
   longitude: number,
   latitude: number
 ): Promise<CoordToAddressResponse> => {
   if (!KAKAO_API_KEY) {
-    throw new Error("VITE_KAKAO_API_KEY is missing");
+    throw new Error("카카오 API 키가 없습니다");
   }
 
   const params = new URLSearchParams({
@@ -219,12 +185,6 @@ export const coordToAddress = async (
   return data;
 };
 
-/**
- * 좌표로 법정동 이름 가져오기
- * @param longitude - 경도
- * @param latitude - 위도
- * @returns Promise<string> - 법정동 주소명
- */
 export const getRegionNameFromCoord = async (
   longitude: number,
   latitude: number
@@ -232,7 +192,6 @@ export const getRegionNameFromCoord = async (
   try {
     const regionData = await coordToRegion(longitude, latitude);
     
-    // 법정동(B) 우선, 없으면 행정동(H) 사용
     const legalDistrict = regionData.documents.find(
       (doc) => doc.region_type === "B"
     );
@@ -246,7 +205,6 @@ export const getRegionNameFromCoord = async (
       return district.address_name;
     }
 
-    // 행정구역 정보가 없으면 주소 변환 API 사용
     const addressData = await coordToAddress(longitude, latitude);
     if (addressData.documents[0]?.address?.address_name) {
       return addressData.documents[0].address.address_name;
@@ -257,7 +215,7 @@ export const getRegionNameFromCoord = async (
 
     return "알 수 없는 위치";
   } catch (error) {
-    console.error("Failed to get region name from coord:", error);
+    console.error("좌표로부터 지역명을 가져오는데 실패했습니다:", error);
     return "알 수 없는 위치";
   }
 };

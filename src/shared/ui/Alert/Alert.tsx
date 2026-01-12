@@ -43,14 +43,12 @@ export const Alert = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* 배경 오버레이 */}
       <div
         className="fixed inset-0"
         style={overlayStyle}
         onClick={onClose}
       />
       
-      {/* 알림 팝업 */}
       <div
         className={`relative ${bgColor} text-white rounded-lg shadow-xl p-6 max-w-md w-full z-10`}
       >

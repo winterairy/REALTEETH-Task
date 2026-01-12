@@ -25,7 +25,7 @@ export const FavoriteCard = ({
   const [editTitle, setEditTitle] = useState(favoriteItem.displayTitle);
   const lastFcstTimeRef = useRef<string | null>(null);
 
-  const { data: weatherData, isLoading, error, refetch } = useWeatherQuery(
+  const { data: weatherData, error, refetch } = useWeatherQuery(
     {
       latitude: favoriteItem.latitude,
       longitude: favoriteItem.longitude,
@@ -40,7 +40,6 @@ export const FavoriteCard = ({
     }
   );
 
-  // fcstTime 변경 감지하여 새로고침
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
     let cancelled = false;

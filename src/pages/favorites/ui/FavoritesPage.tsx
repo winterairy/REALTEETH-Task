@@ -12,7 +12,6 @@ export const FavoritesPage = () => {
   const [favoriteItems, setFavoriteItems] = useState<FavoriteItem[]>([]);
   const [removingItemTitle, setRemovingItemTitle] = useState<string>("");
 
-  // 즐겨찾기 목록 불러오기
   useEffect(() => {
     const loadFavorites = () => {
       const items = favoritesQueue.getAll();
@@ -100,7 +99,6 @@ export const FavoritesPage = () => {
         </div>
       </div>
 
-      {/* 즐겨찾기 해제 팝업 모달*/}
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div

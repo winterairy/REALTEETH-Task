@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, startTransition } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useWeatherQuery } from "@/entities/weather/api/weatherQuery";
 import { getCurrentPosition } from "@/shared/lib/geolocation";
+import type { Coordinates } from "@/shared/model/coords";
 import { getRegionNameFromCoord } from "@/shared/api/kakaoLocalApi";
 import { Alert } from "@/shared/ui";
 import { favoritesQueue } from "@/shared/lib/favorites";
@@ -17,10 +18,7 @@ import { StarIcon as StarIconOutline } from "@heroicons/react/24/outline";
 export const HomePage = () => {
   const [searchParams] = useSearchParams();
   const [locationName, setLocationName] = useState<string | undefined>();
-  const [coordinates, setCoordinates] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertType, setAlertType] = useState<"error" | "success">("error");
@@ -29,36 +27,34 @@ export const HomePage = () => {
   const [removedItem, setRemovedItem] = useState<{ originalLocationName: string; displayTitle: string } | null>(null);
   const [isHovered, setIsHovered] = useState(false);
 
-  // URL 쿼리 파라미터에서 좌표 읽기
   useEffect(() => {
     const latParam = searchParams.get("lat");
     const lonParam = searchParams.get("lon");
     const locationParam = searchParams.get("location");
 
     if (latParam && lonParam) {
-      // URL에서 좌표가 있으면 사용
       const lat = parseFloat(latParam);
       const lon = parseFloat(lonParam);
       
       if (!isNaN(lat) && !isNaN(lon)) {
-        setCoordinates({ latitude: lat, longitude: lon });
-        setLocationName(locationParam ? decodeURIComponent(locationParam) : undefined);
+        startTransition(() => {
+          setCoordinates({ latitude: lat, longitude: lon });
+          setLocationName(locationParam ? decodeURIComponent(locationParam) : undefined);
+        });
       }
     } else {
-      // URL에 좌표가 없으면 현재 위치 가져오기
       const fetchCurrentLocation = async () => {
         try {
           const pos = await getCurrentPosition();
           setCoordinates(pos);
 
-          // 카카오 API로 장소 이름 가져오기
           const regionName = await getRegionNameFromCoord(
             pos.longitude,
             pos.latitude
           );
           setLocationName(regionName);
         } catch (error) {
-          console.error("Failed to get current location:", error);
+          console.error("현재 위치를 가져오는데 실패했습니다:", error);
           setLocationName("현재 위치");
         }
       };
@@ -72,7 +68,6 @@ export const HomePage = () => {
     locationName
   );
 
-  // 에러 발생 시 팝업 표시
   useEffect(() => {
     if (error) {
       const errorMessage =
@@ -81,29 +76,30 @@ export const HomePage = () => {
             ? "해당 장소의 정보가 제공되지 않습니다."
             : error.message
           : "날씨 데이터를 가져오는데 실패했습니다.";
-      setAlertMessage(errorMessage);
-      setAlertType("error");
-      setIsAlertOpen(true);
+      startTransition(() => {
+        setAlertMessage(errorMessage);
+        setAlertType("error");
+        setIsAlertOpen(true);
+      });
     }
   }, [error]);
 
-  // locationName이 업데이트되면 날씨 데이터의 location도 업데이트
   const weatherDataWithLocation = weatherData
     ? { ...weatherData, location: locationName || weatherData.location }
     : weatherData;
 
-  // 즐겨찾기 상태 확인
   useEffect(() => {
     if (coordinates) {
       const favorite = favoritesQueue.isFavorite(
         coordinates.latitude,
         coordinates.longitude
       );
-      setIsFavorite(favorite);
+      startTransition(() => {
+        setIsFavorite(favorite);
+      });
     }
   }, [coordinates]);
 
-  // 즐겨찾기 추가 핸들러
   const handleAddFavorite = () => {
     if (!coordinates || !locationName) {
       setAlertMessage("위치 정보가 없습니다.");
@@ -112,15 +108,12 @@ export const HomePage = () => {
       return;
     }
 
-    // 같은 지역이 이미 즐겨찾기에 있는지 확인 (최신화를 위해 체크만 하고 진행)
     const wasFavorite = isFavorite;
 
-    // 6개가 이미 있는지 확인 (같은 지역이 아닌 경우에만)
     const count = favoritesQueue.getCount();
     const needsConfirmation = count >= 6 && !wasFavorite;
     
     if (needsConfirmation) {
-      // 가장 오래된 항목 정보를 미리 가져오기 위해 임시로 추가해보고 제거
       const result = favoritesQueue.add(
         locationName,
         locationName,
@@ -133,12 +126,10 @@ export const HomePage = () => {
           originalLocationName: result.removedItem.originalLocationName,
           displayTitle: result.removedItem.displayTitle,
         });
-        // 다시 제거 (확인 모달을 띄우기 위해)
         favoritesQueue.remove(result.removedItem.id);
         setShowAddConfirmModal(true);
       }
     } else {
-      // 바로 추가 (같은 지역이면 삭제 후 재추가)
       favoritesQueue.add(
         locationName,
         locationName,
@@ -152,7 +143,6 @@ export const HomePage = () => {
     }
   };
 
-  // 확인 모달에서 확인 클릭
   const handleConfirmAdd = () => {
     if (!coordinates || !locationName) return;
 
@@ -170,13 +160,11 @@ export const HomePage = () => {
     setIsAlertOpen(true);
   };
 
-  // 확인 모달에서 취소 클릭
   const handleCancelAdd = () => {
     setShowAddConfirmModal(false);
     setRemovedItem(null);
   };
 
-  // 즐겨찾기 제거 핸들러
   const handleRemoveFavorite = () => {
     if (!coordinates) return;
 
@@ -201,7 +189,6 @@ export const HomePage = () => {
         onClose={() => setIsAlertOpen(false)}
         type={alertType}
       />
-      {/* 즐겨찾기 추가 확인 모달 */}
       {showAddConfirmModal && removedItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div

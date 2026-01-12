@@ -5,7 +5,6 @@ import { addressToCoord } from "@/shared/api/kakaoLocalApi";
 import { Alert } from "@/shared/ui";
 import koreaDistricts from "@/assets/korea_districts.json";
 
-// 검색 결과 최대 개수 제한 (성능 최적화)
 const MAX_SEARCH_RESULTS = 100;
 
 export const SearchBar = (): ReactElement => {
@@ -16,10 +15,8 @@ export const SearchBar = (): ReactElement => {
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  // debounce를 적용한 검색어 (300ms 지연)
   const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
 
-  // 검색어에 따라 지역 필터링 (debounce된 검색어 사용)
   const filteredRegions: string[] = useMemo<string[]>(() => {
     const query = debouncedSearchQuery.trim();
 
@@ -30,7 +27,6 @@ export const SearchBar = (): ReactElement => {
     const lowerQuery = query.toLowerCase();
     const results: string[] = [];
 
-    // 최대 결과 개수 제한으로 조기 종료
     for (const region of koreaDistricts) {
       if (region.toLowerCase().includes(lowerQuery)) {
         results.push(region);
@@ -43,7 +39,6 @@ export const SearchBar = (): ReactElement => {
     return results;
   }, [debouncedSearchQuery]);
 
-  // 외부 클릭 시 focus 해제
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent): void => {
       if (
@@ -60,12 +55,10 @@ export const SearchBar = (): ReactElement => {
     };
   }, []);
 
-  // ESC 키로 검색 목록 닫기
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent): void => {
       if (event.key === "Escape" && isFocused) {
         setIsFocused(false);
-        // 입력 필드에서 포커스 제거
         if (searchContainerRef.current) {
           const input = searchContainerRef.current.querySelector("input");
           if (input) {
@@ -94,7 +87,6 @@ export const SearchBar = (): ReactElement => {
       setSearchQuery("");
       setIsFocused(false);
 
-      // 카카오 Local API로 주소를 좌표로 변환
       const response = await addressToCoord(region);
       
       if (response.documents.length > 0) {
@@ -102,14 +94,13 @@ export const SearchBar = (): ReactElement => {
         const longitude = parseFloat(firstResult.x);
         const latitude = parseFloat(firstResult.y);
 
-        // URL 쿼리 파라미터로 좌표 전달
         navigate(`/?lat=${latitude}&lon=${longitude}&location=${encodeURIComponent(region)}`);
       } else {
         setAlertMessage("해당 장소의 정보가 제공되지 않습니다.");
         setIsAlertOpen(true);
       }
     } catch (error) {
-      console.error("Failed to get coordinates:", error);
+      console.error("좌표를 가져오는데 실패했습니다:", error);
       const errorMessage =
         error instanceof Error
           ? error.message === "검색 결과가 없습니다." ||

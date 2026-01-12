@@ -1,4 +1,3 @@
-// 오늘 날짜를 YYYYMMDD 형식으로 반환
 const getFormattedDate = (): string => {
   const currentDate = new Date();
   const year = currentDate.getFullYear();

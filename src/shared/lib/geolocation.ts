@@ -1,18 +1,12 @@
-export interface Coordinates {
-  latitude: number;
-  longitude: number;
-}
+import type { Coordinates } from "@/shared/model/coords";
+
+export type { Coordinates } from "@/shared/model/coords";
 
 export interface GeolocationError {
   code: number;
   message: string;
 }
 
-/**
- * 현재 위치를 가져옵니다.
- * @returns Promise<Coordinates> - 위도와 경도
- * @throws GeolocationError - 위치 정보를 가져올 수 없을 때
- */
 export const getCurrentPosition = (): Promise<Coordinates> => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {

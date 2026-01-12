@@ -1,6 +1,5 @@
 import type { WeatherData } from "./types";
 
-// 더미 날씨 데이터 (에러 표시용 - 모든 수치가 0)
 export const mockWeatherData: WeatherData = {
   location: "서울특별시",
   currentTemp: 0,
