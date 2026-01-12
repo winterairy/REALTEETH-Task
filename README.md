@@ -6,7 +6,7 @@
 
 ### 1. 환경 변수 설정
 
-프로젝트 루트에 `.env` 파일을 생성하고 다음 환경 변수를 설정하세요:
+프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경변수를 세팅합니다.
 
 ```env
 VITE_API_KEY=기상청_공공데이터_API_키
@@ -53,7 +53,7 @@ npm run preview
 - **TypeScript**
 - **Vite** 
 
-### 상태 관리 및 데이터 페칭
+### 상태 관리 라이브러리
 
 - **TanStack Query (React Query)** 
     - 서버 상태 관리 및 캐싱
@@ -79,14 +79,14 @@ npm run preview
 
 - 브라우저의 Geolocation API를 사용하여 현재 위치를 자동으로 감지
 - 현재 위치의 날씨 정보를 실시간으로 표시
-- 카카오 Local API를 통해 좌표를 지역명으로 변환
+- 카카오 Local API를 통해 좌표를 행정구역명(법정동)으로 변환 혹은 행정구역을 좌표로 변환
 
 ### 2. 지역 검색
 
-- 한국 지역 목록(`korea_districts.json`)을 활용한 검색 구현
-- Debounce를 적용하여 입력 최적화 (300ms 지연)
+- `korea_districts.json`으로 검색 목록 구현
+- Debounce를 적용하여 입력 최적화(300ms 지연)
 - 목록에 표시할 검색 결과 최대 100개로 제한하여 성능 최적화
-- 카카오 Local API를 통해 검색된 지역의 좌표로 변환하여 날씨 조회
+- 카카오 Local API를 통해 검색된 지역의 좌표로 변환하여 날씨 조회 연동
 
 ### 3. 날씨 정보 표시
 
@@ -99,14 +99,14 @@ npm run preview
 
 - 최대 6개까지 지역 즐겨찾기 저장 (FIFO 방식)
 - sessionStorage를 사용한 데이터 저장
-- 즐겨찾기 목록 페이지에서 모든 즐겨찾기 지역의 날씨를 카드 형태로 표시
+- 즐겨찾기 목록 페이지에서 저장한 즐겨찾기 지역의 날씨를 카드 형태로 표시
 - 즐겨찾기 제목 수정 기능
 - 즐겨찾기 해제 시 확인 모달 표시
 - 중복 추가 시 기존 항목 제거 후 재추가
 
 ### 5. 자동 데이터 갱신
 
-- 기상청 API의 예보 갱신 주기(30분 단위)에 맞춰 자동 데이터 갱신
+- 기상청 API를 활용해 매시간 정각이 지나면 자동 데이터 갱신
 - React Query의 캐싱 전략과 함께 사용하여 불필요한 API 호출 최소화
 
 ### 6. 에러 처리
@@ -140,10 +140,6 @@ app → pages → widgets → features → entities → shared
 - Background refetching으로 사용자 경험 향상
 - 로딩, 에러 상태 관리 자동화
 
-**설정:**
-- `staleTime: 5분` - 5분간 데이터를 fresh 상태로 유지
-- `gcTime: 10분` - 10분간 캐시 유지
-- `refetchOnWindowFocus: false` - 윈도우 포커스 시 자동 refetch 비활성화 (날씨 데이터 특성상 불필요)
 
 ### 3. Tailwind CSS 사용
 
@@ -161,22 +157,14 @@ app → pages → widgets → features → entities → shared
 - sessionStorage와 연동하여 데이터 저장 (브라우저 세션 동안 유지)
 - 중복 추가 시 재추가하는 로직으로 최근 사용 지역 상단 유지
 
-### 5. 클라이언트 사이드 지역 검색
-
-**이유:**
-- `korea_districts.json` 파일을 사용하여 API 호출 없이 빠른 검색
-- Debounce를 통한 입력 최적화
-- 검색 결과 제한(최대 100개)으로 렌더링 성능 최적화
-- 카카오 API는 최종 좌표 변환 시에만 호출하여 API 사용량 절감
-
-### 6. 기상청 Grid 좌표 변환
+### 5. 기상청 Grid 좌표 변환
 
 **이유:**
 - 기상청 API는 WGS84 좌표계가 아닌 Grid 좌표계를 사용
 - 위경도를 Grid 좌표로 변환하는 알고리즘 구현
 - 정확한 날씨 데이터 조회를 위한 필수 구현
 
-### 7. URL 쿼리 파라미터를 통한 상태 관리
+### 6. URL 쿼리 파라미터를 통한 상태 관리
 
 **이유:**
 - 즐겨찾기에서 홈으로 이동 시 좌표 정보 전달
@@ -184,7 +172,7 @@ app → pages → widgets → features → entities → shared
 - 페이지 새로고침 시에도 상태 유지
 - React Router의 `useSearchParams` 활용
 
-### 8. TypeScript 사용
+### 7. TypeScript 사용
 
 **이유:**
 - 타입 안정성으로 런타임 에러 감소
@@ -192,7 +180,7 @@ app → pages → widgets → features → entities → shared
 - API 응답 타입 정의로 데이터 구조 명확화
 - 리팩토링 시 안전성 보장
 
-### 9. Vite 사용
+### 8. Vite 사용
 
 **이유:**
 - 기존 Create React App 대비 빠른 개발 서버 시작 속도
@@ -200,13 +188,12 @@ app → pages → widgets → features → entities → shared
 - ES 모듈 기반 빌드로 번들 크기 최적화
 - 간단한 설정과 플러그인 생태계
 
-### 10. 환경 변수를 통한 API 키 관리
+### 9. 환경 변수를 통한 API 키 관리
 
 **이유:**
 - API 키를 코드에 하드코딩하지 않아 보안 강화
 - Vite의 `import.meta.env`를 사용한 환경 변수 접근
 - 개발/프로덕션 환경별 다른 키 사용 가능
-- `.env` 파일을 `.gitignore`에 추가하여 Git에 커밋 방지
 
 ## 프로젝트 구조 (FSD 아키텍처)
 
@@ -251,15 +238,6 @@ src/
     ├── assets/       # 공유 에셋
     └── styles/       # 공유 스타일
 ```
-
-## 레이어 규칙
-
-### Import 규칙
-
-- 각 레이어는 **같은 레이어** 또는 **하위 레이어**만 import 가능
-- 상위 레이어로의 import는 금지
-
-> app → pages → widgets → features → entities → shared
 
 ## Path Aliases
 
