@@ -3,7 +3,7 @@ import { toGridPoint } from "@/shared/lib/geoGrid";
 import type { WeatherData } from "../model/types";
 
 const BASE_URL =
-  "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
+  "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
 const SERVICE_KEY = import.meta.env.VITE_API_KEY as string | undefined;
 
 if (!SERVICE_KEY) {
@@ -69,7 +69,7 @@ export const getVilageFcst = async (
         if (this.status === 200) {
           try {
             const data = JSON.parse(this.responseText) as KmaApiResponse;
-            console.log("KMA getVilageFcst response:", data);
+            // console.log("KMA getVilageFcst response:", data);
 
             if (data.response?.header?.resultCode !== "00") {
               const errorMsg =
