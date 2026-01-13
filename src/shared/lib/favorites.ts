@@ -70,11 +70,13 @@ class FavoritesQueue {
         (a, b) => a.createdAt - b.createdAt
       );
       removedItem = sortedItems[0];
-      const filteredItems = items.filter(
-        (item) => item.id !== removedItem.id
-      );
-      items.length = 0;
-      items.push(...filteredItems);
+      if (removedItem) {
+        const filteredItems = items.filter(
+          (item) => item.id !== removedItem!.id
+        );
+        items.length = 0;
+        items.push(...filteredItems);
+      }
     }
 
     items.push(newItem);
